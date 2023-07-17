@@ -19,9 +19,23 @@ const row = (bill) => {
     `)
   }
 
-const rows = (data) => {
-  return (data && data.length) ? data.map(bill => row(bill)).join("") : ""
+const rows = (data) => {  
+ if (data) {  
+  const sortedData = data.sort((a, b) => {
+    const dateA = new Date(a.date);
+    const dateB = new Date(b.date);
+
+    if (dateA > dateB) {
+      return -1; 
+    }
+    if (dateA < dateB) {
+      return 1; 
+    }
+    return 0;
+  });  
+  return sortedData.map(bill => row(bill)).join('');
 }
+};
 
 export default ({ data: bills, loading, error }) => {
   
