@@ -5,36 +5,29 @@ import LoadingPage from "./LoadingPage.js"
 import Actions from './Actions.js'
 
 const row = (bill) => {
-  return (`
+  return `
     <tr>
       <td>${bill.type}</td>
       <td>${bill.name}</td>
-      <td>${bill.date}</td>
+      <td>${bill.formatedDate || bill.date}</td>
       <td>${bill.amount} €</td>
       <td>${bill.status}</td>
       <td>
         ${Actions(bill.fileUrl)}
       </td>
     </tr>
-    `)
-  }
+    `;
+};
 
-const rows = (data) => {  
- if (data) {  
-  const sortedData = data.sort((a, b) => {
-    const dateA = new Date(a.date);
-    const dateB = new Date(b.date);
-
-    if (dateA > dateB) {
-      return -1; 
-    }
-    if (dateA < dateB) {
-      return 1; 
-    }
-    return 0;
-  });  
-  return sortedData.map(bill => row(bill)).join('');
-}
+const rows = (data) => {
+  return data && data.length
+    ? [...data]
+        .sort((a, b) => {
+          return new Date(b.date) - new Date(a.date);
+        })
+        .map((bill) => row(bill))
+        .join("")
+    : "";
 };
 
 export default ({ data: bills, loading, error }) => {
