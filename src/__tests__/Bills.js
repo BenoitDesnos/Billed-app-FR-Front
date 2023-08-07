@@ -29,10 +29,6 @@ beforeAll(() => {
   window.onNavigate(ROUTES_PATH.Bills);
 });
 
-afterEach(() => {
-  jest.clearAllMocks();
-});
-
 describe("Given I am connected as an employee", () => {
   describe("When I am on Bills page, I click on the icon eye", () => {
     test("Then a modal should appear and the image is rendered", async () => {
@@ -40,22 +36,16 @@ describe("Given I am connected as an employee", () => {
         "https://test.storage.tld/v0/b/billable-677b6.a…dur.png?alt=media&token=571d34cb-9c8f-430a-af52-66221cae1da3";
       const iconEye = screen.getAllByTestId("icon-eye");
       const secondEye = iconEye[1];
-
       const dialog = await screen.findByRole("dialog", { hidden: true });
-
       $.fn.modal = jest.fn();
-
       userEvent.click(secondEye);
-
       const img = screen.getByAltText("Bill");
-
       expect(dialog).toBeInTheDocument();
       expect($.fn.modal).toHaveBeenCalledWith("show");
       expect(img).toBeInTheDocument();
       expect(img).toHaveAttribute("src", billUrl);
     });
   });
-
   describe("When I am on Bills page, I click on the button New Bill", () => {
     test("Then, should render the Add a New Bill Page", async () => {
       const btn = screen.getByTestId("btn-new-bill");
@@ -73,51 +63,18 @@ describe("Given I am connected as an employee", () => {
 describe("Given I am a user connected as an employee", () => {
   describe("WWhen I am on Bills page", () => {
     test("Then fetches bills from mock API GET", async () => {
-      Object.defineProperty(window, "localStorage", {
-        value: localStorageMock,
-      });
-      window.localStorage.setItem(
-        "user",
-        JSON.stringify({
-          type: "Employee",
-          email: "employee@test.tld",
-          status: "connected",
-        })
-      );
-      const root = document.createElement("div");
-      root.setAttribute("id", "root");
-      document.body.appendChild(root);
-      router();
       window.onNavigate(ROUTES_PATH.Bills);
-
       const dataMocked = jest.spyOn(mockStore.bills(), "list");
       mockStore.bills().list();
-
       await waitFor(() => {
         expect(dataMocked).toHaveBeenCalledTimes(1);
         expect(document.querySelectorAll("tbody tr").length).toBe(4);
         expect(screen.findByText("Mes notes de frais")).toBeTruthy();
       });
     });
-
     describe("When an error occurs on API", () => {
       beforeEach(() => {
         jest.spyOn(mockStore, "bills");
-        Object.defineProperty(window, "localStorage", {
-          value: localStorageMock,
-        });
-        window.localStorage.setItem(
-          "user",
-          JSON.stringify({
-            type: "Employee",
-            email: "employee@test.tld",
-            status: "connected",
-          })
-        );
-        const root = document.createElement("div");
-        root.setAttribute("id", "root");
-        document.body.appendChild(root);
-        router();
       });
       afterEach(() => {
         jest.clearAllMocks();
@@ -135,7 +92,6 @@ describe("Given I am a user connected as an employee", () => {
         const message = await screen.getByText(/Erreur 404/);
         expect(message).toBeTruthy();
       });
-
       test("Then fetches messages from an API and fails with 500 message error", async () => {
         mockStore.bills.mockImplementationOnce(() => {
           return {
@@ -144,7 +100,6 @@ describe("Given I am a user connected as an employee", () => {
             },
           };
         });
-
         window.onNavigate(ROUTES_PATH.Bills);
         await new Promise(process.nextTick);
         const message = await screen.getByText(/Erreur 500/);
