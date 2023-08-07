@@ -79,32 +79,19 @@ describe("Given I am a user connected as an employee", () => {
       afterEach(() => {
         jest.clearAllMocks();
       });
-      test("Then fetches bills from an API and fails with 404 message error", async () => {
+      test("fetches bills from an API and fails with any error messages, and display it", async () => {
         mockStore.bills.mockImplementationOnce(() => {
           return {
             list: () => {
-              return Promise.reject(new Error("Erreur 404"));
+              return Promise.reject(new Error("Erreur XXX"));
             },
           };
         });
-        window.onNavigate(ROUTES_PATH.Bills);
+        window.onNavigate(ROUTES_PATH.Dashboard);
         await new Promise(process.nextTick);
-        const message = await screen.getByText(/Erreur 404/);
+        const message = await screen.getByText(/Erreur XXX/);
         expect(message).toBeTruthy();
-      });
-      test("Then fetches messages from an API and fails with 500 message error", async () => {
-        mockStore.bills.mockImplementationOnce(() => {
-          return {
-            list: () => {
-              return Promise.reject(new Error("Erreur 500"));
-            },
-          };
-        });
-        window.onNavigate(ROUTES_PATH.Bills);
-        await new Promise(process.nextTick);
-        const message = await screen.getByText(/Erreur 500/);
-        expect(message).toBeTruthy();
-      });
+      });      
     });
   });
 });

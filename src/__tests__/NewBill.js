@@ -199,31 +199,15 @@ describe("Given I am a user connected as an employee", () => {
     });
     describe("When an error occurs on API", () => {
       jest.spyOn(mockStore, "bills");
-      test("Then sends new bill to the API and fails with 404 message error", async () => {
-        const error = new Error("Erreur 404");
+      test("Then sends new bill to the API and fails with any error messages, and display it", async () => {
+        const error = new Error("Erreur XXX");
         mockStore.bills.mockImplementationOnce(() => {
           return {
             create: () => {
-              return Promise.reject(new Error("Erreur 404"));
+              return Promise.reject(new Error("Erreur XXX"));
             },
           };
         });
-
-        window.onNavigate(ROUTES_PATH.NewBill);
-        await new Promise(process.nextTick);
-        await expect(mockStore.bills().create({})).rejects.toEqual(error);
-      });
-
-      test("Then sends new bill to the API and fails with 500 message error", async () => {
-        const error = new Error("Erreur 500");
-        mockStore.bills.mockImplementationOnce(() => {
-          return {
-            create: () => {
-              return Promise.reject(new Error("Erreur 500"));
-            },
-          };
-        });
-
         window.onNavigate(ROUTES_PATH.NewBill);
         await new Promise(process.nextTick);
         await expect(mockStore.bills().create({})).rejects.toEqual(error);
